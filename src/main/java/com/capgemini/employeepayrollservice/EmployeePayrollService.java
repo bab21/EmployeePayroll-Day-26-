@@ -11,7 +11,7 @@ public class EmployeePayrollService {
 		this.employeePayrollList=employeePayrollList;
 	}
 	public EmployeePayrollService() {
-		employeePayrollDBService=new EmployeePayrollDBService();
+		employeePayrollDBService=EmployeePayrollDBService.getInstance();
 	}
 	
 	public void readEmployeePayrollData(Scanner consoleInputReader) {

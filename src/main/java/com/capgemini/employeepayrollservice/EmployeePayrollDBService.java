@@ -14,6 +14,24 @@ import java.util.List;
 
 public class EmployeePayrollDBService {
 	private PreparedStatement employeePayrollDataStatement;
+	private static EmployeePayrollDBService empployeePayrollDBService=null;
+	
+		  
+    // private constructor restricted to this class itself 
+    private EmployeePayrollDBService() 
+    { 
+    	
+    } 
+  
+    // static method to create instance of Singleton class 
+    public static EmployeePayrollDBService getInstance() 
+    { 
+        if (empployeePayrollDBService== null) 
+        	empployeePayrollDBService = new EmployeePayrollDBService (); 
+  
+        return empployeePayrollDBService;
+    } 
+	
 	public List<EmployeePayrollData> readData() throws EmployeePayrollException{
 		String sql="SELECT * FROM employee_payroll";
 		List<EmployeePayrollData> employeePayrollList=new ArrayList<>();
