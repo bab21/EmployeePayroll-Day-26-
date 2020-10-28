@@ -65,5 +65,9 @@ public class EmployeePayrollService {
 		return employeePayrollDataList.get(0).equals(getEmployeePayrollData(name));
 	}
 	
+	public List<EmployeePayrollData> getEmployeeWithDateRange() throws EmployeePayrollException{
+		List<EmployeePayrollData> employeePayrollDataList=employeePayrollDBService.getEmployeePayrollDataWithStartDateInGivenRange();
+		return employeePayrollDataList;
+	}
 	
 }

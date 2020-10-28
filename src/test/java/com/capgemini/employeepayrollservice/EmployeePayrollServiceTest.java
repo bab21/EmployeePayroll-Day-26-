@@ -51,4 +51,14 @@ public class EmployeePayrollServiceTest {
 		assertTrue(result);
 		
 	}
+	
+	//UC5....
+	@Test
+	public void givenDateRange_WhenEmployeeDataRetrieved_ShouldMatch() throws EmployeePayrollException {
+		EmployeePayrollService employeePayrollService=new EmployeePayrollService();
+		List<EmployeePayrollData> employeePayrollDataList=employeePayrollService.getEmployeeWithDateRange();
+		boolean result=employeePayrollDataList.get(0).name.equals("Terisa") && employeePayrollDataList.get(1).name.equals("Charlie");
+		assertTrue(result);	
+	}
+
 }

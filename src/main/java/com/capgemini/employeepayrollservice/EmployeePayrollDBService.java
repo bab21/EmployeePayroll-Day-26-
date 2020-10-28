@@ -142,4 +142,22 @@ public class EmployeePayrollDBService {
 			throw new EmployeePayrollException("unable to prepare statement");
 		}
 	}
+
+	public List<EmployeePayrollData> getEmployeePayrollDataWithStartDateInGivenRange() throws EmployeePayrollException {
+		// TODO Auto-generated method stub
+		List<EmployeePayrollData> employeePayrollList=new ArrayList<>();
+
+		try {
+			Connection connection=this.getConnection();
+			String sql="select * from employee_payroll where start BETWEEN CAST('2019-01-01' AS DATE) and DATE(NOW());";
+			Statement statement=connection.createStatement();
+			ResultSet resultSet=statement.executeQuery(sql);
+			employeePayrollList=getEmployeePayrollData(resultSet);
+			
+		}
+		catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return employeePayrollList;
+	}
 }
