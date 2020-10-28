@@ -26,7 +26,7 @@ public class EmployeePayrollServiceTest {
 		assertEquals(3,numberOfEmployees);
 	}
 	@Test
-	public void givenFileOnReadingFromFilesShouldMatchEmployeeCount() {
+	public void givenFileOnReadingFromFilesShouldMatchEmployeeCount() throws EmployeePayrollException {
 		EmployeePayrollService employeePayrollService=new EmployeePayrollService();
 		List<EmployeePayrollData> employeePayrollDataList=employeePayrollService.readEmployeePayrollData(IOService.FILE_IO);
 		System.out.println( employeePayrollDataList);
@@ -36,9 +36,19 @@ public class EmployeePayrollServiceTest {
 	
 	//UC2 Database..
 	@Test
-	public void givenEmployeePayrollDB_WhenRetrieved_ShouldMatchEmployeeCount() {
+	public void givenEmployeePayrollDB_WhenRetrieved_ShouldMatchEmployeeCount() throws EmployeePayrollException {
 		EmployeePayrollService employeePayrollService=new EmployeePayrollService();
 		List<EmployeePayrollData> employeePayrollDataList=employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
 		assertEquals(3,employeePayrollDataList.size());
+	}
+	//UC3 Database...
+	@Test
+	public void givenNewSalaryForEmployee_WhenUpdated_ShouldSyncWithDB() throws EmployeePayrollException {
+		EmployeePayrollService employeePayrollService=new EmployeePayrollService();
+		List<EmployeePayrollData> employeePayrollDataList=employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
+		employeePayrollService.updateEmployeeSalary("Terisa",300000.00);
+		boolean result=employeePayrollService.checkEmployeePayrollInSyncWithDB("Terisa");
+		assertTrue(result);
+		
 	}
 }

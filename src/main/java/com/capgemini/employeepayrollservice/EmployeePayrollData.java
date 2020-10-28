@@ -23,5 +23,18 @@ public class EmployeePayrollData {
 	public String toString() {
 		return id+","+name+","+salary+","+start+","+gender;
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if(this==o) return true;
+		if(o==null|| this.getClass()!=o.getClass()) return false;
+		EmployeePayrollData that=(EmployeePayrollData)o;
+		
+		return id==that.id &&
+				Double.compare(that.salary, salary)==0 &&
+				name.equals(that.name) &&
+				that.gender==gender &&
+				start.compareTo(that.start)==0;
+	}
 
 }
