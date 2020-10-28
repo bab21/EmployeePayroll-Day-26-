@@ -33,8 +33,11 @@ public class EmployeePayrollService {
 		List<EmployeePayrollData> employePayrollDataList=new ArrayList<EmployeePayrollData>();
 		if(ioService.equals(IOService.FILE_IO))
 			employePayrollDataList=new EmployeePayrollFileIOService().readData();
+		if(ioService.equals(IOService.DB_IO))
+			employePayrollDataList=new EmployeePayrollDBService().readData();
 		return employePayrollDataList;
 	}
+	
 	public void printData(IOService ioService) {
 		if(ioService.equals(IOService.FILE_IO))
 		  new EmployeePayrollFileIOService().printData();

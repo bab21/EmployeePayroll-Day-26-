@@ -34,4 +34,11 @@ public class EmployeePayrollServiceTest {
 		assertEquals(3,employeePayrollDataList.size());
 	}
 	
+	//UC2 Database..
+	@Test
+	public void givenEmployeePayrollDB_WhenRetrieved_ShouldMatchEmployeeCount() {
+		EmployeePayrollService employeePayrollService=new EmployeePayrollService();
+		List<EmployeePayrollData> employeePayrollDataList=employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
+		assertEquals(3,employeePayrollDataList.size());
+	}
 }
