@@ -36,7 +36,7 @@ public class EmployeePayrollDBService {
 		return employeePayrollList;
 	}
 	public int updateEmployeeData(String name,double salary) throws EmployeePayrollException {
-		return this.updateEmployeeDataUsingStatement(name, salary);
+		return this.updateEmployeeDataUsingPreparedStatement(name, salary);
 	}
 	private int updateEmployeeDataUsingStatement(String name,double salary) throws EmployeePayrollException {
 		String sql=String.format("update employee_payroll set salary=%.02f where name='%s';",salary,name);
@@ -46,6 +46,19 @@ public class EmployeePayrollDBService {
 		}
 		catch(SQLException e) {
 			throw new EmployeePayrollException("unable to connect to database");
+		}
+	}
+	private int updateEmployeeDataUsingPreparedStatement(String name,double salary) throws EmployeePayrollException{
+		try {
+			Connection connection=this.getConnection();
+			String sql=String.format("UPDATE employee_payroll SET salary=%.2f WHERE name='%s' ;", salary, name);
+			
+			PreparedStatement preparedStatement=connection.prepareStatement(sql);			
+			return preparedStatement.executeUpdate(sql);
+		}
+		catch(SQLException e) {
+			e.printStackTrace();
+			throw new EmployeePayrollException("unable to create prepared statement");
 		}
 	}
 	private Connection getConnection() throws SQLException{
