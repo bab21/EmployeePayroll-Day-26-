@@ -71,6 +71,7 @@ public class EmployeePayrollServiceTest {
 	}
 	
 	//UC7..
+	@Test
 	public void givenNewEmployee_WhenAdded_ShouldSyncWithDB() throws EmployeePayrollException{
 		EmployeePayrollService employeePayrollService=new EmployeePayrollService();
 		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);

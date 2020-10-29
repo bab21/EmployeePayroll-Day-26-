@@ -62,7 +62,9 @@ public class EmployeePayrollService {
 				.orElse(null);
 	}
 	public boolean checkEmployeePayrollInSyncWithDB(String name) throws EmployeePayrollException {
+		System.out.println("in"+name);
 		List<EmployeePayrollData> employeePayrollDataList=employeePayrollDBService.getEmployeePayrollData(name);
+		System.out.println("returned "+employeePayrollDataList);
 		return employeePayrollDataList.get(0).equals(getEmployeePayrollData(name));
 	}
 	
