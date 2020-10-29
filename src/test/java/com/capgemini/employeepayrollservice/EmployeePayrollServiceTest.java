@@ -2,7 +2,7 @@ package com.capgemini.employeepayrollservice;
 
 import static org.junit.Assert.*;
 
-
+import java.time.LocalDate;
 import java.util.*;
 
 import org.junit.Test;
@@ -56,16 +56,27 @@ public class EmployeePayrollServiceTest {
 	@Test
 	public void givenDateRange_WhenEmployeeDataRetrieved_ShouldMatch() throws EmployeePayrollException {
 		EmployeePayrollService employeePayrollService=new EmployeePayrollService();
-		List<EmployeePayrollData> employeePayrollDataList=employeePayrollService.getEmployeeWithDateRange();
-		boolean result=employeePayrollDataList.get(0).name.equals("Terisa") && employeePayrollDataList.get(1).name.equals("Charlie");
-		assertTrue(result);	
+		LocalDate startDate=LocalDate.of(2018, 01, 01);
+		LocalDate endDate=LocalDate.now();
+		List<EmployeePayrollData> employeePayrollDataList=employeePayrollService.getEmployeeWithDateRange(startDate,endDate);
+		assertEquals(3,employeePayrollDataList.size());
 	}
 	//UC6...
 	@Test
 	public void givenEmployeeData_WhenSumSalaryWithGender_ShouldMatch() throws EmployeePayrollException {
 		EmployeePayrollService employeePayrollService=new EmployeePayrollService();
-		double salarySum=employeePayrollService.getEmployeeSalarySumGroupWithGender();
-		assertEquals(600000.0,salarySum,0.0);
+		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
+		Map<String,Double> salarySumByGender=employeePayrollService.getEmployeeSalarySumGroupWithGender();
+		assertTrue(salarySumByGender.get("F").equals(600000.0) && salarySumByGender.get("M").equals(100000.0));
+	}
+	
+	//UC7..
+	public void givenNewEmployee_WhenAdded_ShouldSyncWithDB() throws EmployeePayrollException{
+		EmployeePayrollService employeePayrollService=new EmployeePayrollService();
+		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
+		employeePayrollService.addEmployeeToPayroll("Mark",500000.00,LocalDate.now(),"M");
+		boolean result=employeePayrollService.checkEmployeePayrollInSyncWithDB("Mark");
+		assertTrue(result);
 	}
 
 }

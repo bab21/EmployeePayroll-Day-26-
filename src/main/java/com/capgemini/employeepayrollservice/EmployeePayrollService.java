@@ -1,5 +1,6 @@
 package com.capgemini.employeepayrollservice;
 import java.util.*;
+import java.time.LocalDate;
 
 public class EmployeePayrollService {
 	public enum IOService{CONSOLE_IO,DB_IO,REST_IO,FILE_IO}
@@ -65,13 +66,16 @@ public class EmployeePayrollService {
 		return employeePayrollDataList.get(0).equals(getEmployeePayrollData(name));
 	}
 	
-	public List<EmployeePayrollData> getEmployeeWithDateRange() throws EmployeePayrollException{
-		List<EmployeePayrollData> employeePayrollDataList=employeePayrollDBService.getEmployeePayrollDataWithStartDateInGivenRange();
+	public List<EmployeePayrollData> getEmployeeWithDateRange(LocalDate startDate,LocalDate endDate) throws EmployeePayrollException{
+		List<EmployeePayrollData> employeePayrollDataList=employeePayrollDBService.getEmployeePayrollDataFortDateRange(startDate,endDate);
 		return employeePayrollDataList;
 	}
 	
-	public double getEmployeeSalarySumGroupWithGender() throws EmployeePayrollException{
-		double salarySum=employeePayrollDBService.getEmployeeSalarySumGroupWithGender();
-		return salarySum;
+	public Map<String, Double> getEmployeeSalarySumGroupWithGender() throws EmployeePayrollException{
+		return employeePayrollDBService.getEmployeeSalarySumGroupWithGender();
+	}
+	public void addEmployeeToPayroll(String name, double salary, LocalDate startDate, String gender) {
+		// TODO Auto-generated method stub
+		employeePayrollList.add(employeePayrollDBService.addEmployeeToPayroll(name,salary,startDate,gender));
 	}
 }

@@ -1,6 +1,7 @@
 package com.capgemini.employeepayrollservice;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -10,7 +11,9 @@ import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class EmployeePayrollDBService {
 	private PreparedStatement employeePayrollDataStatement;
@@ -30,17 +33,7 @@ public class EmployeePayrollDBService {
 	
 	public List<EmployeePayrollData> readData() throws EmployeePayrollException{
 		String sql="SELECT * FROM employee_payroll";
-		List<EmployeePayrollData> employeePayrollList=new ArrayList<>();
-		try {
-			Connection connection =this.getConnection();
-			Statement statement=connection.createStatement();
-			ResultSet resultSet=statement.executeQuery(sql);
-			employeePayrollList= getEmployeePayrollData(resultSet);
-		}
-		catch(SQLException e) {
-			throw new EmployeePayrollException("unable to read data from database");
-		}
-		return employeePayrollList;
+		return this.getEmployeePayrollDataUsingDB(sql);
 	}
 	public int updateEmployeeData(String name,double salary) throws EmployeePayrollException {
 		return this.updateEmployeeDataUsingPreparedStatement(name, salary);
@@ -101,6 +94,20 @@ public class EmployeePayrollDBService {
 		}
 		return employeePayrollDataList;
 	}
+	
+	private List<EmployeePayrollData> getEmployeePayrollDataUsingDB(String sql) throws EmployeePayrollException{
+		List<EmployeePayrollData> employeePayrollList=new ArrayList<>();
+		try(Connection connection =this.getConnection()){
+			Statement statement=connection.createStatement();
+			ResultSet resultSet=statement.executeQuery(sql);
+			employeePayrollList= getEmployeePayrollData(resultSet);
+		}
+		catch(SQLException e) {
+			e.printStackTrace();
+			throw new EmployeePayrollException("unable to read data from database");
+		}
+		return employeePayrollList;
+	}
 
 	private List<EmployeePayrollData> getEmployeePayrollData(ResultSet resultSet) throws EmployeePayrollException {
 		List<EmployeePayrollData> employeePayrollDataList=new ArrayList<>();
@@ -115,6 +122,7 @@ public class EmployeePayrollDBService {
 			}
 		}
 		catch(SQLException e) {
+			e.printStackTrace();
 			throw new EmployeePayrollException("unable to read data from database");
 		}
 		return employeePayrollDataList;
@@ -131,37 +139,47 @@ public class EmployeePayrollDBService {
 		}
 	}
 
-	public List<EmployeePayrollData> getEmployeePayrollDataWithStartDateInGivenRange() throws EmployeePayrollException {
-		List<EmployeePayrollData> employeePayrollList=new ArrayList<>();
-
-		try {
-			Connection connection=this.getConnection();
-			String sql="select * from employee_payroll where start BETWEEN CAST('2019-01-01' AS DATE) and DATE(NOW());";
-			Statement statement=connection.createStatement();
-			ResultSet resultSet=statement.executeQuery(sql);
-			employeePayrollList=getEmployeePayrollData(resultSet);
-			
-		}
-		catch(SQLException e) {
-			throw new EmployeePayrollException("problem in sql query");
-		}
-		return employeePayrollList;
+	public List<EmployeePayrollData> getEmployeePayrollDataFortDateRange(LocalDate startDate,LocalDate endDate) throws EmployeePayrollException {
+		String sql;
+		sql=String.format("select * from employee_payroll where start BETWEEN '%s' and '%s' ;",Date.valueOf(startDate),Date.valueOf(endDate));
+		return this.getEmployeePayrollDataUsingDB(sql);
 	}
 
-	public double getEmployeeSalarySumGroupWithGender() throws EmployeePayrollException {
-		double salarySum=0;
-		try {
-			Connection connection=this.getConnection();
-			String sql="select sum(salary) from employee_payroll where gender='F' group by gender";
+	public Map<String, Double> getEmployeeSalarySumGroupWithGender() throws EmployeePayrollException {
+		String sql="select gender,sum(salary) as salary_sum from employee_payroll group by gender;";
+		Map<String,Double> genderToSalarySum=new HashMap<>();
+		try(Connection connection=this.getConnection()){
 			Statement statement=connection.createStatement();
 			ResultSet resultSet=statement.executeQuery(sql);
-			resultSet.absolute(1);
-			salarySum=resultSet.getDouble(1);
+			while(resultSet.next()) {
+				String gender=resultSet.getString("gender");
+				double salary=resultSet.getDouble("salary_sum");
+				genderToSalarySum.put(gender, salary);
+				
+			}
 		}
 		catch(SQLException e) {
-			throw new EmployeePayrollException("unable to create query");
+			e.printStackTrace();
 		}
-		return salarySum;
-
+		return genderToSalarySum;
+	}
+	public EmployeePayrollData addEmployeeToPayroll(String name, double salary, LocalDate startDate, String gender) {
+		int employeeId=-1;
+		EmployeePayrollData employeePayrollData=null;
+		String sql=String.format("INSERT INTO employee_payroll(name,gender,salary,start)"+
+		              "VALUES ('%s','%s','%s','%s' )", name,gender,salary,Date.valueOf(startDate));
+		try(Connection connection=this.getConnection()){
+			Statement statement=connection.createStatement();
+			int rowAffected=statement.executeUpdate(sql,statement.RETURN_GENERATED_KEYS);
+			if(rowAffected==1) {
+				ResultSet resultSet=statement.getGeneratedKeys();
+				if(resultSet.next()) employeeId=resultSet.getInt(1);
+			}
+			employeePayrollData=new EmployeePayrollData(employeeId,name,salary,startDate,gender.charAt(0));
+		}
+		catch(SQLException e) {
+			e.printStackTrace();
+		}
+		return employeePayrollData;
 	}
 }
