@@ -70,4 +70,8 @@ public class EmployeePayrollService {
 		return employeePayrollDataList;
 	}
 	
+	public double getEmployeeSalarySumGroupWithGender() throws EmployeePayrollException{
+		double salarySum=employeePayrollDBService.getEmployeeSalarySumGroupWithGender();
+		return salarySum;
+	}
 }

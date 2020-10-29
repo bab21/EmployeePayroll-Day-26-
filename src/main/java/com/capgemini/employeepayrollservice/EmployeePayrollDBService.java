@@ -16,14 +16,10 @@ public class EmployeePayrollDBService {
 	private PreparedStatement employeePayrollDataStatement;
 	private static EmployeePayrollDBService empployeePayrollDBService=null;
 	
-		  
-    // private constructor restricted to this class itself 
     private EmployeePayrollDBService() 
     { 
     	
     } 
-  
-    // static method to create instance of Singleton class 
     public static EmployeePayrollDBService getInstance() 
     { 
         if (empployeePayrollDBService== null) 
@@ -38,15 +34,8 @@ public class EmployeePayrollDBService {
 		try {
 			Connection connection =this.getConnection();
 			Statement statement=connection.createStatement();
-			ResultSet result=statement.executeQuery(sql);
-			while(result.next()) {
-				int id=result.getInt("id");
-				String name=result.getString("name");
-				double salary=result.getDouble("salary");
-				LocalDate start=result.getDate("start").toLocalDate();
-				char gender=result.getString("gender").charAt(0);
-				employeePayrollList.add(new EmployeePayrollData(id,name,salary,start,gender));
-			}
+			ResultSet resultSet=statement.executeQuery(sql);
+			employeePayrollList= getEmployeePayrollData(resultSet);
 		}
 		catch(SQLException e) {
 			throw new EmployeePayrollException("unable to read data from database");
@@ -99,7 +88,6 @@ public class EmployeePayrollDBService {
 		}
 	}
 	public List<EmployeePayrollData> getEmployeePayrollData(String name) throws EmployeePayrollException {
-		// TODO Auto-generated method stub
 		List<EmployeePayrollData> employeePayrollDataList=null;
 		if(this.employeePayrollDataStatement==null)
 			this.prepareStatementForEmployeeData();
@@ -144,7 +132,6 @@ public class EmployeePayrollDBService {
 	}
 
 	public List<EmployeePayrollData> getEmployeePayrollDataWithStartDateInGivenRange() throws EmployeePayrollException {
-		// TODO Auto-generated method stub
 		List<EmployeePayrollData> employeePayrollList=new ArrayList<>();
 
 		try {
@@ -156,8 +143,25 @@ public class EmployeePayrollDBService {
 			
 		}
 		catch(SQLException e) {
-			e.printStackTrace();
+			throw new EmployeePayrollException("problem in sql query");
 		}
 		return employeePayrollList;
+	}
+
+	public double getEmployeeSalarySumGroupWithGender() throws EmployeePayrollException {
+		double salarySum=0;
+		try {
+			Connection connection=this.getConnection();
+			String sql="select sum(salary) from employee_payroll where gender='F' group by gender";
+			Statement statement=connection.createStatement();
+			ResultSet resultSet=statement.executeQuery(sql);
+			resultSet.absolute(1);
+			salarySum=resultSet.getDouble(1);
+		}
+		catch(SQLException e) {
+			throw new EmployeePayrollException("unable to create query");
+		}
+		return salarySum;
+
 	}
 }

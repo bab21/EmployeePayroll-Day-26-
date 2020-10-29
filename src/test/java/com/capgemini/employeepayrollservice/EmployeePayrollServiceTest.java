@@ -60,5 +60,12 @@ public class EmployeePayrollServiceTest {
 		boolean result=employeePayrollDataList.get(0).name.equals("Terisa") && employeePayrollDataList.get(1).name.equals("Charlie");
 		assertTrue(result);	
 	}
+	//UC6...
+	@Test
+	public void givenEmployeeData_WhenSumSalaryWithGender_ShouldMatch() throws EmployeePayrollException {
+		EmployeePayrollService employeePayrollService=new EmployeePayrollService();
+		double salarySum=employeePayrollService.getEmployeeSalarySumGroupWithGender();
+		assertEquals(600000.0,salarySum,0.0);
+	}
 
 }
