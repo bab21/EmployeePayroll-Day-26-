@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.capgemini.employeepayrollservice.model.EmployeePayrollData;
+
 public class EmployeePayrollDBService {
 	private PreparedStatement employeePayrollDataStatement;
 	private static EmployeePayrollDBService empployeePayrollDBService=null;
@@ -111,14 +113,32 @@ public class EmployeePayrollDBService {
 
 	private List<EmployeePayrollData> getEmployeePayrollData(ResultSet resultSet) throws EmployeePayrollException {
 		List<EmployeePayrollData> employeePayrollDataList=new ArrayList<>();
-		try {
+		try(Connection connection=this.getConnection()){
 			while(resultSet.next()) {
 				int id=resultSet.getInt("id");
 				String name=resultSet.getString("name");
 				double salary=resultSet.getDouble("salary");
 				LocalDate start=resultSet.getDate("start").toLocalDate();
 				char gender=resultSet.getString("gender").charAt(0);
-				employeePayrollDataList.add(new EmployeePayrollData(id,name,salary,start,gender));
+				int company_id=resultSet.getInt("company_id");
+				
+				Statement statement=connection.createStatement();
+				String sqlCompany=String.format("select company_name from company where company_id='%d' ;",company_id);
+				ResultSet resultSetForCompany=statement.executeQuery(sqlCompany);
+				resultSetForCompany.absolute(1);
+				String company_name=resultSetForCompany.getString("company_name");
+				
+				String sqlDepartment=String.format("select department.department_name "
+						+ "from employee_department,department"
+						+ " where department.department_id=employee_department.department_id and "
+						+ "employee_department.employee_id='%d' ;",id);
+				ResultSet resultSetForDepartment=statement.executeQuery(sqlDepartment);
+				List<String> departments=new ArrayList<String>();
+				while(resultSetForDepartment.next()) {
+					String department=resultSetForDepartment.getString("department_name");
+					departments.add(department);
+				}
+				employeePayrollDataList.add(new EmployeePayrollData(id,name,salary,start,gender,company_name,departments));
 			}
 		}
 		catch(SQLException e) {
@@ -155,7 +175,6 @@ public class EmployeePayrollDBService {
 				String gender=resultSet.getString("gender");
 				double salary=resultSet.getDouble("salary_sum");
 				genderToSalarySum.put(gender, salary);
-				
 			}
 		}
 		catch(SQLException e) {
@@ -163,7 +182,7 @@ public class EmployeePayrollDBService {
 		}
 		return genderToSalarySum;
 	}
-	public EmployeePayrollData addEmployeeToPayroll(String name, double salary, LocalDate startDate, String gender) throws EmployeePayrollException {
+	public EmployeePayrollData addEmployeeToPayroll(String name, double salary, LocalDate startDate, String gender, int company_id) throws EmployeePayrollException {
 		int employeeId=-1;
 		EmployeePayrollData employeePayrollData=null;
 		Connection connection=null;
@@ -174,8 +193,8 @@ public class EmployeePayrollDBService {
 			e.printStackTrace();
 		}
 		try(Statement statement=connection.createStatement()){
-			String sql=String.format("INSERT INTO employee_payroll(name,gender,salary,start)"+
-		              "VALUES ('%s','%s','%s','%s' )", name,gender,salary,Date.valueOf(startDate));
+			String sql=String.format("INSERT INTO employee_payroll(name,gender,salary,start,company_id)"+
+		              "VALUES ('%s','%s','%s','%s','%d' )", name,gender,salary,Date.valueOf(startDate),company_id);
 			int rowAffected=statement.executeUpdate(sql,statement.RETURN_GENERATED_KEYS);
 			if(rowAffected==1) {
 				ResultSet resultSet=statement.getGeneratedKeys();
@@ -196,8 +215,8 @@ public class EmployeePayrollDBService {
 			double taxablePay=salary-deductions;
 			double tax=taxablePay*0.1;
 			double netPay=salary-tax;
-			String sql=String.format("insert into payroll_details(employee_id,basic_pay,deductions,taxable_pay,tax,net_pay)"
-					+ " VALUES ('%s','%s','%s','%s','%s','%s' )",
+			String sql=String.format("insert into payroll_details(id,basicPay,deductions,taxablePay,tax,netPay)"
+					+ " VALUES ('%d','%.2f','%.2f','%.2f','%.2f','%.2f' )",
 					employeeId,salary,deductions,taxablePay,tax,netPay);
 			int rowAffected=statement.executeUpdate(sql);
 			if(rowAffected==1) {

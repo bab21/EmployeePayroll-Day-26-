@@ -8,37 +8,39 @@ import java.util.*;
 import org.junit.Test;
 
 import com.capgemini.employeepayrollservice.EmployeePayrollService.IOService;
+import com.capgemini.employeepayrollservice.model.EmployeePayrollData;
 
 public class EmployeePayrollServiceTest {
 
-	@Test
-	public void given3EmployeesWhenWrittenToFileShouldMatchEmployeeEntries() {
-		EmployeePayrollData[] arrayOfEmps= {
-				new EmployeePayrollData(1,"Babli",30000),
-				new EmployeePayrollData(2,"Nancy",40000),
-				new EmployeePayrollData(3,"Sagar",50000)
-				};
-		
-		EmployeePayrollService employeePayrollService=new EmployeePayrollService(Arrays.asList(arrayOfEmps));
-		employeePayrollService.writeEmployeePayrollData(IOService.FILE_IO);
-		employeePayrollService.printData(IOService.FILE_IO);
-		long numberOfEmployees=employeePayrollService.countNumberOfEmployees();
-		assertEquals(3,numberOfEmployees);
-	}
-	@Test
-	public void givenFileOnReadingFromFilesShouldMatchEmployeeCount() throws EmployeePayrollException {
-		EmployeePayrollService employeePayrollService=new EmployeePayrollService();
-		List<EmployeePayrollData> employeePayrollDataList=employeePayrollService.readEmployeePayrollData(IOService.FILE_IO);
-		System.out.println( employeePayrollDataList);
-		
-		assertEquals(3,employeePayrollDataList.size());
-	}
-	
+//	@Test
+//	public void given3EmployeesWhenWrittenToFileShouldMatchEmployeeEntries() {
+//		EmployeePayrollData[] arrayOfEmps= {
+//				new EmployeePayrollData(1,"Babli",30000),
+//				new EmployeePayrollData(2,"Nancy",40000),
+//				new EmployeePayrollData(3,"Sagar",50000)
+//				};
+//		
+//		EmployeePayrollService employeePayrollService=new EmployeePayrollService(Arrays.asList(arrayOfEmps));
+//		employeePayrollService.writeEmployeePayrollData(IOService.FILE_IO);
+//		employeePayrollService.printData(IOService.FILE_IO);
+//		long numberOfEmployees=employeePayrollService.countNumberOfEmployees();
+//		assertEquals(3,numberOfEmployees);
+//	}
+//	@Test
+//	public void givenFileOnReadingFromFilesShouldMatchEmployeeCount() throws EmployeePayrollException {
+//		EmployeePayrollService employeePayrollService=new EmployeePayrollService();
+//		List<EmployeePayrollData> employeePayrollDataList=employeePayrollService.readEmployeePayrollData(IOService.FILE_IO);
+//		System.out.println( employeePayrollDataList);
+//		
+//		assertEquals(3,employeePayrollDataList.size());
+//	}
+//	
 	//UC2 Database..
 	@Test
 	public void givenEmployeePayrollDB_WhenRetrieved_ShouldMatchEmployeeCount() throws EmployeePayrollException {
 		EmployeePayrollService employeePayrollService=new EmployeePayrollService();
 		List<EmployeePayrollData> employeePayrollDataList=employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
+		System.out.println("data"+employeePayrollDataList);
 		assertEquals(3,employeePayrollDataList.size());
 	}
 	//UC3 Database...
@@ -75,7 +77,7 @@ public class EmployeePayrollServiceTest {
 	public void givenNewEmployee_WhenAdded_ShouldSyncWithDB() throws EmployeePayrollException{
 		EmployeePayrollService employeePayrollService=new EmployeePayrollService();
 		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
-		employeePayrollService.addEmployeeToPayroll("Mark",500000.00,LocalDate.now(),"M");
+		employeePayrollService.addEmployeeToPayroll("Mark",500000.00,LocalDate.now(),"M",2);
 		boolean result=employeePayrollService.checkEmployeePayrollInSyncWithDB("Mark");
 		assertTrue(result);
 	}

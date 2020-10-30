@@ -1,6 +1,7 @@
-package com.capgemini.employeepayrollservice;
+package com.capgemini.employeepayrollservice.model;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public class EmployeePayrollData {
 	public int id;
@@ -8,6 +9,8 @@ public class EmployeePayrollData {
 	public double salary;
 	public LocalDate start;
 	public char gender;
+	public String company;
+	public List<String> departmentList;
 	
 	public EmployeePayrollData(int id,String name,double salary) {
 		this.id=id;
@@ -19,9 +22,13 @@ public class EmployeePayrollData {
 		this.start=start;
 		this.gender=gender;
 	}
-	
+	public EmployeePayrollData(int id,String name,double salary,LocalDate start,char gender,String company,List<String> departmentList) {
+		this(id,name,salary,start,gender);
+		this.company=company;
+		this.departmentList=departmentList;
+	}
 	public String toString() {
-		return id+","+name+","+salary+","+start+","+gender;
+		return id+","+name+","+salary+","+start+","+gender+","+company+","+departmentList;
 	}
 	
 	@Override

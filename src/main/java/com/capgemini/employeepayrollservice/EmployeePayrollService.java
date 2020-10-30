@@ -1,5 +1,8 @@
 package com.capgemini.employeepayrollservice;
 import java.util.*;
+
+import com.capgemini.employeepayrollservice.model.EmployeePayrollData;
+
 import java.time.LocalDate;
 
 public class EmployeePayrollService {
@@ -76,8 +79,8 @@ public class EmployeePayrollService {
 	public Map<String, Double> getEmployeeSalarySumGroupWithGender() throws EmployeePayrollException{
 		return employeePayrollDBService.getEmployeeSalarySumGroupWithGender();
 	}
-	public void addEmployeeToPayroll(String name, double salary, LocalDate startDate, String gender) {
+	public void addEmployeeToPayroll(String name, double salary, LocalDate startDate, String gender, int company_id) throws EmployeePayrollException {
 		// TODO Auto-generated method stub
-		employeePayrollList.add(employeePayrollDBService.addEmployeeToPayroll(name,salary,startDate,gender));
+		employeePayrollList.add(employeePayrollDBService.addEmployeeToPayroll(name,salary,startDate,gender,company_id));
 	}
 }
