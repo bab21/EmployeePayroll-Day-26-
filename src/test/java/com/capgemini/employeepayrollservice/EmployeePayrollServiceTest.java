@@ -39,23 +39,23 @@ public class EmployeePayrollServiceTest {
 //		List<EmployeePayrollData> employeePayrollDataList=employeePayrollService.getEmployeeWithDateRange(startDate,endDate);
 //		assertEquals(3,employeePayrollDataList.size());
 //	}
-	//UC6...
-	@Test
-	public void givenEmployeeData_WhenSumSalaryWithGender_ShouldMatch() throws EmployeePayrollException {
-		EmployeePayrollService employeePayrollService=new EmployeePayrollService();
-		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
-		Map<String,Double> salarySumByGender=employeePayrollService.getEmployeeSalarySumGroupWithGender();
-		assertTrue(salarySumByGender.get("F").equals(600000.0) && salarySumByGender.get("M").equals(100000.0));
-	}
-	
-	//UC7..
-////	@Test
-//	public void givenNewEmployee_WhenAdded_ShouldSyncWithDB() throws EmployeePayrollException{
+//	//UC6...
+//	@Test
+//	public void givenEmployeeData_WhenSumSalaryWithGender_ShouldMatch() throws EmployeePayrollException {
 //		EmployeePayrollService employeePayrollService=new EmployeePayrollService();
 //		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
-//		employeePayrollService.addEmployeeToPayroll("Mark",500000.00,LocalDate.now(),"M",2);
-//		boolean result=employeePayrollService.checkEmployeePayrollInSyncWithDB("Mark");
-//		assertTrue(result);
+//		Map<String,Double> salarySumByGender=employeePayrollService.getEmployeeSalarySumGroupWithGender();
+//		assertTrue(salarySumByGender.get("F").equals(600000.0) && salarySumByGender.get("M").equals(100000.0));
 //	}
+	
+	//UC7..
+	@Test
+	public void givenNewEmployee_WhenAdded_ShouldSyncWithDB() throws EmployeePayrollException{
+		EmployeePayrollService employeePayrollService=new EmployeePayrollService();
+		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
+		employeePayrollService.addEmployeeToPayroll("Mark",500000.00,LocalDate.now(),"M",2);
+		boolean result=employeePayrollService.checkEmployeePayrollInSyncWithDB("Mark");
+		assertTrue(result);
+	}
 
 }
