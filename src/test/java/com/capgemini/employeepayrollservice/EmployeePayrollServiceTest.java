@@ -53,8 +53,9 @@ public class EmployeePayrollServiceTest {
 	public void givenNewEmployee_WhenAdded_ShouldSyncWithDB() throws EmployeePayrollException{
 		EmployeePayrollService employeePayrollService=new EmployeePayrollService();
 		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
-		employeePayrollService.addEmployeeToPayroll("Mark",500000.00,LocalDate.now(),"M",2);
-		boolean result=employeePayrollService.checkEmployeePayrollInSyncWithDB("Mark");
+		int[] departments= {1,2,3};
+		employeePayrollService.addEmployeeToPayroll("Alisha",500000.00,LocalDate.now(),"M",2,departments);
+		boolean result=employeePayrollService.checkEmployeePayrollInSyncWithDB("Alisha");
 		assertTrue(result);
 	}
 

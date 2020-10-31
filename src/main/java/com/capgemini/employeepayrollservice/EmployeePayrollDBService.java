@@ -182,7 +182,7 @@ public class EmployeePayrollDBService {
 		}
 		return genderToSalarySum;
 	}
-	public EmployeePayrollData addEmployeeToPayroll(String name, double salary, LocalDate startDate, String gender, int company_id) throws EmployeePayrollException {
+	public EmployeePayrollData addEmployeeToPayroll(String name, double salary, LocalDate startDate, String gender, int company_id,int[] departments) throws EmployeePayrollException {
 		int employeeId=-1;
 		EmployeePayrollData employeePayrollData=null;
 		Connection connection=null;
@@ -209,6 +209,21 @@ public class EmployeePayrollDBService {
 				e1.printStackTrace();
 				throw new EmployeePayrollException("insert error");
 			}
+		}
+		try(Statement statement=connection.createStatement()){
+			for(int i=0;i<departments.length;i++) {
+				String sql=String.format("insert into employee_department(employee_id,department_id)"
+						+"values ('%d','%d' )", employeeId,departments[i]);
+				int rowAffected=statement.executeUpdate(sql);	
+			}
+		}catch(SQLException e) {
+			try {
+				connection.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+			throw new EmployeePayrollException("query error");
 		}
 		try(Statement statement=connection.createStatement()){
 			double deductions=salary*0.2;
