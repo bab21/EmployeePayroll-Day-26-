@@ -49,14 +49,26 @@ public class EmployeePayrollServiceTest {
 //	}
 	
 	//UC7..
+//	@Test
+//	public void givenNewEmployee_WhenAdded_ShouldSyncWithDB() throws EmployeePayrollException{
+//		EmployeePayrollService employeePayrollService=new EmployeePayrollService();
+//		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
+//		int[] departments= {1,2,3};
+//		employeePayrollService.addEmployeeToPayroll("Alisha",500000.00,LocalDate.now(),"M",2,departments);
+//		boolean result=employeePayrollService.checkEmployeePayrollInSyncWithDB("Alisha");
+//		assertTrue(result);
+//	}
+	//UC12...
 	@Test
-	public void givenNewEmployee_WhenAdded_ShouldSyncWithDB() throws EmployeePayrollException{
+	public void givenEmployee_WhenDeleted_ShoudldSyncWithDB() throws EmployeePayrollException {
 		EmployeePayrollService employeePayrollService=new EmployeePayrollService();
-		employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
-		int[] departments= {1,2,3};
-		employeePayrollService.addEmployeeToPayroll("Alisha",500000.00,LocalDate.now(),"M",2,departments);
-		boolean result=employeePayrollService.checkEmployeePayrollInSyncWithDB("Alisha");
-		assertTrue(result);
+		List<EmployeePayrollData> employeePayrollDataList=employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
+		int sizeBeforeDeletion=employeePayrollDataList.size();
+		employeePayrollService.deleteEmployee("Alisha");
+		employeePayrollDataList=employeePayrollService.readEmployeePayrollData(IOService.DB_IO);
+		int sizeAfterDeletion=employeePayrollDataList.size();
+		assertTrue(sizeBeforeDeletion==sizeAfterDeletion+1);
+		
 	}
 
 }

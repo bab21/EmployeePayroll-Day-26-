@@ -43,6 +43,9 @@ public class EmployeePayrollService {
 			this.employeePayrollList=employeePayrollDBService.readData();
 		return employeePayrollList;
 	}
+	public void deleteEmployee(String name) throws EmployeePayrollException {
+		employeePayrollDBService.deleteEmployeeFromPayroll(name);
+	}
 	
 	public void printData(IOService ioService) {
 		if(ioService.equals(IOService.FILE_IO))

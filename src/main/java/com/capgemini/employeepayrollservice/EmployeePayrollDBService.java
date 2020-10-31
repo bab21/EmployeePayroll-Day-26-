@@ -34,8 +34,18 @@ public class EmployeePayrollDBService {
     } 
 	
 	public List<EmployeePayrollData> readData() throws EmployeePayrollException{
-		String sql="SELECT * FROM employee_payroll";
+		String sql="SELECT * FROM employee_payroll where is_active=true";
 		return this.getEmployeePayrollDataUsingDB(sql);
+	}
+	public void deleteEmployeeFromPayroll(String name) throws EmployeePayrollException {
+		String sql=String.format("update employee_payroll set is_active=false where name='%s';",name);
+		try(Connection connection=this.getConnection()){
+			Statement statement=connection.createStatement();
+		    statement.executeUpdate(sql);
+		}
+		catch(SQLException e) {
+			throw new EmployeePayrollException("unable to connect to database");
+		}
 	}
 	public int updateEmployeeData(String name,double salary) throws EmployeePayrollException {
 		return this.updateEmployeeDataUsingPreparedStatement(name, salary);
@@ -151,7 +161,7 @@ public class EmployeePayrollDBService {
 	private void prepareStatementForEmployeeData() throws EmployeePayrollException{
 		try {
 			Connection connection=this.getConnection();
-			String sql="SELECT * FROM employee_payroll WHERE name=?";
+			String sql="SELECT * FROM employee_payroll WHERE name=? and is_active=true";
 			employeePayrollDataStatement=connection.prepareStatement(sql);
 		}
 		catch(SQLException e) {
@@ -161,12 +171,12 @@ public class EmployeePayrollDBService {
 
 	public List<EmployeePayrollData> getEmployeePayrollDataFortDateRange(LocalDate startDate,LocalDate endDate) throws EmployeePayrollException {
 		String sql;
-		sql=String.format("select * from employee_payroll where start BETWEEN '%s' and '%s' ;",Date.valueOf(startDate),Date.valueOf(endDate));
+		sql=String.format("select * from employee_payroll where is_active=true and start BETWEEN '%s' and '%s' ;",Date.valueOf(startDate),Date.valueOf(endDate));
 		return this.getEmployeePayrollDataUsingDB(sql);
 	}
 
 	public Map<String, Double> getEmployeeSalarySumGroupWithGender() throws EmployeePayrollException {
-		String sql="select gender,sum(salary) as salary_sum from employee_payroll group by gender;";
+		String sql="select gender,sum(salary) as salary_sum from employee_payroll where is_active=true group by gender;";
 		Map<String,Double> genderToSalarySum=new HashMap<>();
 		try(Connection connection=this.getConnection()){
 			Statement statement=connection.createStatement();
@@ -214,7 +224,8 @@ public class EmployeePayrollDBService {
 			for(int i=0;i<departments.length;i++) {
 				String sql=String.format("insert into employee_department(employee_id,department_id)"
 						+"values ('%d','%d' )", employeeId,departments[i]);
-				int rowAffected=statement.executeUpdate(sql);	
+				int rowAffected=statement.executeUpdate(sql);
+				
 			}
 		}catch(SQLException e) {
 			try {
